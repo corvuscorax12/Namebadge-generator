@@ -6,6 +6,7 @@ using System.IO;
 using System.Net;
 using System.Printing;
 using System.Reflection;
+using System.Security.AccessControl;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -51,7 +52,7 @@ namespace YawgoogIdGenerator
 
                     BitmapImage bitmap = new BitmapImage();
                     bitmap.BeginInit();
-                    bitmap.CacheOption = BitmapCacheOption.OnLoad; 
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
                     bitmap.StreamSource = ms;
                     bitmap.EndInit();
                     bitmap.Freeze();
@@ -69,7 +70,7 @@ namespace YawgoogIdGenerator
             genid.clearCards();
             validIds.Clear();
             OpenFileDialog fileDialog = new OpenFileDialog();
-            fileDialog.Filter = "csv files (*.csv)|*.csv"; 
+            fileDialog.Filter = "text files (*.txt)|*.txt";
             if (fileDialog.ShowDialog() == true)
             {
 
@@ -97,24 +98,24 @@ namespace YawgoogIdGenerator
             btn_add.IsEnabled = false;
             btn_createNewCSV.IsEnabled = false;
             btn_opencsv.IsEnabled = false;
-            btn_exportIDs.IsEnabled =false;
+            btn_exportIDs.IsEnabled = false;
             dtg_staffData.IsEnabled = false;
 
             await Task.Run(() => {
-            foreach (var item in dataList)
-            {
-                var row = item as ParseInfo;
-                int ratios = fileman.CheckPhoto(row.Photo);
-                if (ratios == 4)
+                foreach (var item in dataList)
                 {
-                    row.Warnings = "🖼️";
-                }
+                    var row = item as ParseInfo;
+                    int ratios = fileman.CheckPhoto(row.Photo);
+                    if (ratios == 4)
+                    {
+                        row.Warnings = "🖼️";
+                    }
                     else
                     {
                         row.Warnings = "";
                     }
                 }
-        });
+            });
             dtg_staffData.IsEnabled = true;
             btn_add.IsEnabled = true;
             btn_createNewCSV.IsEnabled = true;
@@ -139,7 +140,7 @@ namespace YawgoogIdGenerator
 
                     row.Photo = fileDialog.FileName;
                     int ratios = fileman.CheckPhoto(row.Photo);
-                    if (ratios==4)
+                    if (ratios == 4)
                     {
                         row.Warnings = "🖼️";
                     }
@@ -266,7 +267,7 @@ namespace YawgoogIdGenerator
                 }
 
             }
-            else if(e.Key == Key.S && Keyboard.Modifiers == ModifierKeys.Control)
+            else if (e.Key == Key.S && Keyboard.Modifiers == ModifierKeys.Control)
             {
                 dataman.saveData(fileman.GetCsv());
                 update_CropStatus();
@@ -297,6 +298,11 @@ namespace YawgoogIdGenerator
                     grid.CurrentCell = new DataGridCellInfo(grid.Items[nextRowIdx], grid.Columns[0]);
                     grid.BeginEdit();
                 }
+
+            }
+            if (e.Key == Key.Delete)
+            {
+                e.Handled = true;
 
             }
         }
@@ -346,7 +352,7 @@ namespace YawgoogIdGenerator
                 dialog.PrintVisual(imgtoprint, $"PrintJob {DateTime.Now.ToString()}");
                 dtg_staffData.Items.Refresh();
 
-                
+
             }
 
 
@@ -406,43 +412,71 @@ namespace YawgoogIdGenerator
             try
             {
 
-            if (dtg_staffData.SelectedItem != null)
-            {
-                
-            genid.clearCards();
-            validIds.Clear();
-            var selected = dtg_staffData.SelectedItem as ParseInfo;
-            Dataman tmpdata = new Dataman();
-            tmpdata.data = new List<ParseInfo> { selected};
-
-            if (selected.Done != true)
+                if (dtg_staffData.SelectedItem != null)
                 {
-                    int ratioMode;
-                    if (selected.Photo != null && selected.Photo != "")
-                    {
-                        ratioMode = fileman.CheckPhoto(selected.Photo);
-                    }
-                    else
-                    {
-                        ratioMode = 5;
-                    }
 
-                    if (genid.genid(tmpdata, 0, ratioMode) != null)
+                    genid.clearCards();
+                    validIds.Clear();
+                    var selected = dtg_staffData.SelectedItem as ParseInfo;
+                    Dataman tmpdata = new Dataman();
+                    tmpdata.data = new List<ParseInfo> { selected };
+
+                    if (selected.Done != true)
                     {
-                        validIds.Add(0);
+                        int ratioMode;
+                        if (selected.Photo != null && selected.Photo != "")
+                        {
+                            ratioMode = fileman.CheckPhoto(selected.Photo);
+                        }
+                        else
+                        {
+                            ratioMode = 5;
+                        }
+
+                        if (genid.genid(tmpdata, 0, ratioMode) != null)
+                        {
+                            validIds.Add(0);
+                        }
                     }
+                    var img = genid.GetImage(0);
+                    if (img != null)
+                    {
+                        img_Id.Source = img;
+                        tab_ViewTab.SelectedIndex = 1;
+                    }
+                    dtg_staffData.Items.Refresh();
                 }
-                var img = genid.GetImage(0);
-                if (img != null)
-                {
-                    img_Id.Source = img;
-                    tab_ViewTab.SelectedIndex = 1;
-                }
-                dtg_staffData.Items.Refresh();
-            }
             }
             catch (Exception)
             {
+            }
+        }
+
+
+        private void btn_Delete_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.CommandParameter != null)
+            {
+                object rowItemToDelete = button.CommandParameter;
+
+                var result = MessageBox.Show(
+                    "Are you sure you want to delete this specific row? \nThis action cannot be undone.",
+                    "Confirm Delete",
+                    MessageBoxButton.OKCancel,
+                    MessageBoxImage.Warning
+                    );
+                if (result == MessageBoxResult.OK)
+                {
+                    if (dtg_staffData.ItemsSource is System.Collections.IList list)
+                    {
+                        list.Remove(rowItemToDelete);
+                    }
+                    else
+                    {
+                        dtg_staffData.Items.Remove(rowItemToDelete);
+                    }
+                    dtg_staffData.Items.Refresh();
+                }
             }
         }
     }

@@ -17,7 +17,7 @@ namespace YawgoogIdGenerator
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             Stream mysteam;
-            saveFileDialog.Filter = "CSV FILES|*.csv";
+            saveFileDialog.Filter = "CSV FILES|*.txt";
             if (saveFileDialog.ShowDialog() == true)
             {
                 if ((mysteam = saveFileDialog.OpenFile()) != null)

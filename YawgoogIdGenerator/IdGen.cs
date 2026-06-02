@@ -211,7 +211,7 @@ namespace YawgoogIdGenerator
                                    .ScaleToFit()
                                    .AlignCenter()
                                    .AlignMiddle()
-                                   .Text(idInformation.data[d].Name)
+                                   .Text(idInformation.data[d].First_Name+" " + idInformation.data[d].Last_Name)
                                    .Bold()
                                    .AlignCenter()
                                    .FontSize(18);

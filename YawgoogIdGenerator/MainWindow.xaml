@@ -22,8 +22,8 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <Button Grid.Row="0" Name="btn_opencsv" Content="Open CSV" Click="btn_opencsv_Click"/>
-            <Button Grid.Row="1" Name="btn_createNewCSV" Content="Create CSV" Click="btn_createNewCSV_Click"/>
+            <Button Grid.Row="0" Name="btn_opencsv" Content="Open List" Click="btn_opencsv_Click"/>
+            <Button Grid.Row="1" Name="btn_createNewCSV" Content="Create List" Click="btn_createNewCSV_Click"/>
             <Button Grid.Row="2" Name="btn_exportIDs" Content="Create IDs" Click="btn_exportIDs_Click" IsEnabled="False"/>
             <Button Grid.Row="3" Name="btn_exportSelected" Content="Create From Selected" IsEnabled="False" Click="btn_exportSelected_Click"/>
 
@@ -39,27 +39,29 @@
                             <RowDefinition/>
                             <RowDefinition Height="25"/>
                         </Grid.RowDefinitions>
-                        <DataGrid Grid.Row="0" x:Name="dtg_staffData" CanUserAddRows="True" CanUserSortColumns="True" SelectionChanged="dtg_staffData_SelectionChanged" KeyDown="dtg_keydown" CellEditEnding="dtg_afteredit" AddingNewItem="dtg_ondit" PreviewKeyDown="dtg_staffData_PreviewKeyDown">
+                        <DataGrid Grid.Row="0" x:Name="dtg_staffData" CanUserAddRows="True" CanUserDeleteRows="True" CanUserSortColumns="True"  SelectionChanged="dtg_staffData_SelectionChanged" KeyDown="dtg_keydown" CellEditEnding="dtg_afteredit" AddingNewItem="dtg_ondit" PreviewKeyDown="dtg_staffData_PreviewKeyDown">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Width="300" Binding="{Binding Name}" x:Name="Name" Header="Name"/>
+                                <DataGridTextColumn Width="150" Binding="{Binding First_Name}" x:Name="First_Name" Header="First Name"/>
+                                <DataGridTextColumn Width="150" Binding="{Binding Last_Name}" x:Name="Last_Name" Header="Last Name"/>
+                                <DataGridTextColumn Width="200" Binding="{Binding Preferred_Name}" x:Name="Preferred_Name" Header="Preferred Name"/>
                                 <DataGridTextColumn Width="250" Binding="{Binding Position}" x:Name="Position" Header="Position"/>
                                 <DataGridTextColumn Width="75" Binding="{Binding Pronouns}" x:Name="Pronouns" Header="Pronouns"/>
-                                <DataGridTemplateColumn Width="450" x:Name="Photo" Header="Photo">
+                                <DataGridTextColumn Width="200" Binding="{Binding Camp}" x:Name="Camp" Header="Camp"/>
+                                <DataGridTemplateColumn Width="100" x:Name="Photo" Header="Photo">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBox Text="{Binding Photo}" IsReadOnly="True" Width="425"></TextBox>
+                                                <TextBox Text="{Binding Photo}" IsReadOnly="True" Width="75"></TextBox>
                                                 <Button Content="..." Width="25" Click="BrowseFile_Click"/>
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTextColumn Binding="{Binding Camp}" x:Name="Camp" Header="Camp"/>
                                 <DataGridCheckBoxColumn Binding="{Binding Done}" x:Name="Done" Header="Done"/>
                                 <DataGridTemplateColumn>
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Content="X" Command="Delete" ToolTip="Delete This Row"/>
+                                            <Button Content="X" x:Name="btn_Delete" Click="btn_Delete_Click" CommandParameter= "{Binding}"  ToolTip="Delete This Row"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
@@ -114,7 +116,7 @@
             </TabItem>
         </TabControl>
         <Label Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="32" Height="53" Width="330" Margin="0,48,0,0">Yawgoog ID Generator</Label>
-        <Label Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" Margin="0,0,0,-41">Version 1.0.0</Label>
+        <Label Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" Margin="0,0,0,-41">Version 1.1.0</Label>
 
         <Image HorizontalAlignment="Center" x:Name="img_Logo"  VerticalAlignment="Center"/>
 

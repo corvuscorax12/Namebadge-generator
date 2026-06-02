@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls.Ribbon;
 
 namespace YawgoogIdGenerator
 {
@@ -9,11 +10,13 @@ namespace YawgoogIdGenerator
     }
     public class ParseInfo
     {
-        public string Name { get; set; }
+        public string First_Name { get; set; }
+        public string Last_Name { get; set; }
+        public string Preferred_Name { get; set; }
         public string Position { get; set; }
         public string Pronouns { get; set; }
-        public string Photo { get; set; }
         public string Camp {  get; set; }
+        public string Photo { get; set; }
         public bool Done { get; set; }
         public string Warnings { get; set; }
 
@@ -30,35 +33,42 @@ namespace YawgoogIdGenerator
             }
 
 
-            return $"{Name},{Position},{Pronouns},{Photo},{Camp},{debool}";
+            return $"{First_Name}\t{Last_Name}\t{Preferred_Name}\t{Position}\t{Pronouns}\t{Camp}\t{Photo}\t{debool}";
         }
         public ParseInfo()
         {
-            Name = "";
+            First_Name = "";
+            Last_Name = "";
+            Preferred_Name = "";
             Position = "";
             Pronouns = "";
-            Photo = "";
             Camp = "";
+            Photo = "";
             Done = false;
         }
         public ParseInfo(ParseInfo other)
         {
-            Name = other.Name;
+            First_Name = other.First_Name;
+            Last_Name = other.Last_Name;
+            Preferred_Name = other.Preferred_Name;
             Position = other.Position;
             Pronouns = other.Pronouns;
-            Photo= other.Photo;
             Camp = other.Camp;
+            Photo= other.Photo;
             Done = other.Done;
         }
         public ParseInfo(string line)
         {
-            var split = line.Split(',');
-            Name = split[0];
-            Position = split[1];
-            Pronouns = split[2];
-            Photo = split[3];
-            Camp = split[4];
-            if (split[5] == "x")
+            var split = line.Split('\t');
+            First_Name = split[0];
+            Last_Name = split[1];
+            Preferred_Name = split[2];
+            Position = split[3];
+            split[4] = split[4].Trim('\"');
+            Pronouns = split[4];
+            Camp = split[5];
+            Photo = split[6];
+            if (split[7] == "x")
             {
                 Done = true;
             }
