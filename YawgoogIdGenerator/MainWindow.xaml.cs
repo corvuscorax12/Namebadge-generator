@@ -455,7 +455,7 @@ namespace YawgoogIdGenerator
 
         private void btn_Delete_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.CommandParameter != null)
+            if (sender is Button button && button.CommandParameter != null )
             {
                 object rowItemToDelete = button.CommandParameter;
 
@@ -467,12 +467,15 @@ namespace YawgoogIdGenerator
                     );
                 if (result == MessageBoxResult.OK)
                 {
+
                     if (dtg_staffData.ItemsSource is System.Collections.IList list)
                     {
+                        dtg_staffData.CancelEdit();
                         list.Remove(rowItemToDelete);
                     }
                     else
                     {
+                        dtg_staffData.CancelEdit();
                         dtg_staffData.Items.Remove(rowItemToDelete);
                     }
                     dtg_staffData.Items.Refresh();
