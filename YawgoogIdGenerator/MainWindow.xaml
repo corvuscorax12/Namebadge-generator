@@ -1,0 +1,122 @@
+﻿<Window x:Class="YawgoogIdGenerator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:YawgoogIdGenerator"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="900" Width="1600">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="89*"/>
+            <RowDefinition Height="345*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="70*"/>
+            <ColumnDefinition Width="301*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Button Grid.Row="0" Name="btn_opencsv" Content="Open CSV" Click="btn_opencsv_Click"/>
+            <Button Grid.Row="1" Name="btn_createNewCSV" Content="Create CSV" Click="btn_createNewCSV_Click"/>
+            <Button Grid.Row="2" Name="btn_exportIDs" Content="Create IDs" Click="btn_exportIDs_Click" IsEnabled="False"/>
+            <Button Grid.Row="3" Name="btn_exportSelected" Content="Create From Selected" IsEnabled="False" Click="btn_exportSelected_Click"/>
+
+
+
+        </Grid>
+        <TabControl x:Name="tab_ViewTab" Grid.Column="1" Grid.Row="1" IsEnabled="True">
+            <TabItem Header="Generate Ids">
+                <Grid>
+
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="25"/>
+                        </Grid.RowDefinitions>
+                        <DataGrid Grid.Row="0" x:Name="dtg_staffData" CanUserAddRows="True" CanUserSortColumns="True" SelectionChanged="dtg_staffData_SelectionChanged" KeyDown="dtg_keydown" CellEditEnding="dtg_afteredit" AddingNewItem="dtg_ondit" PreviewKeyDown="dtg_staffData_PreviewKeyDown">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Width="300" Binding="{Binding Name}" x:Name="Name" Header="Name"/>
+                                <DataGridTextColumn Width="250" Binding="{Binding Position}" x:Name="Position" Header="Position"/>
+                                <DataGridTextColumn Width="75" Binding="{Binding Pronouns}" x:Name="Pronouns" Header="Pronouns"/>
+                                <DataGridTemplateColumn Width="450" x:Name="Photo" Header="Photo">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBox Text="{Binding Photo}" IsReadOnly="True" Width="425"></TextBox>
+                                                <Button Content="..." Width="25" Click="BrowseFile_Click"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Binding="{Binding Camp}" x:Name="Camp" Header="Camp"/>
+                                <DataGridCheckBoxColumn Binding="{Binding Done}" x:Name="Done" Header="Done"/>
+                                <DataGridTemplateColumn>
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="X" Command="Delete" ToolTip="Delete This Row"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="WARN" Binding="{Binding Warnings}" IsReadOnly="True"/>
+
+
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" x:Name="btn_add" Content="Add" Click="btn_add_Click" IsEnabled="False"/>
+                            <Button Grid.Column="1" x:Name="btn_saveas" Content="Save As" Click="btn_saveas_Click" IsEnabled="False"/>
+                            <Button Grid.Column="2" x:Name="btn_save" Content="Save" Click="btn_save_Click" IsEnabled="False"/>
+                            <Button Grid.Column="3" x:Name="btn_OpenPhoto" Content="Open Photo" Click="btn_OpenPhoto_Click" IsCancel="False"/>
+
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="View Ids">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="75"/>
+                    </Grid.RowDefinitions>
+
+                    <Border HorizontalAlignment="Center" Height="513" BorderThickness="1,1,1,1" BorderBrush="Black">
+                        <Image Grid.Row="0" x:Name="img_Id" Height="513"  HorizontalAlignment="Center"/>
+                    </Border>
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,1,0,0" VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <Button x:Name="btn_decId" Content="&lt;--" Padding="10,1,10,1"  Click="btn_decid_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <TextBox x:Name="tbx_idIndex" Padding="20,0,20,0" IsReadOnly="True" HorizontalAlignment="Center" VerticalAlignment="Center">0</TextBox>
+                            <Button x:Name="btn_incid" Content="--&gt;" Padding="10,1,10,1" Margin="15,0,0,0" Click="btn_incid_Click" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,1,0,1" HorizontalAlignment="Center">
+                            <Button x:Name="btn_print" Content="Print" Padding="10,1,10,1" HorizontalContentAlignment="Stretch" Click="btn_print_Click" Margin="10,0,0,0" />
+                            <Button x:Name="btn_printsettings" Content="Print Settings" Padding="9,1,10,1" Margin="10,0,0,0" Click="btn_printsettings_Click"/>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <Label Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="32" Height="53" Width="330" Margin="0,48,0,0">Yawgoog ID Generator</Label>
+        <Label Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" Margin="0,0,0,-41">Version 1.0.0</Label>
+
+        <Image HorizontalAlignment="Center" x:Name="img_Logo"  VerticalAlignment="Center"/>
+
+    </Grid>
+</Window>
