@@ -82,7 +82,8 @@ namespace YawgoogIdGenerator
             }
             else
             {
-                pnouns = $"({idInformation.data[d].Pronouns})";
+                pnouns = $"{idInformation.data[d].Pronouns}";
+                pnouns = pnouns.Replace(", ", "/");
             }
             switch (idInformation.data[d].Position)
             {

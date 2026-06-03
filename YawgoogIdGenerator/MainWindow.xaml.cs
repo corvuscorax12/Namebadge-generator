@@ -1,4 +1,6 @@
-﻿using Microsoft.Win32;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Win32;
+using System.Configuration.Internal;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing.Printing;
@@ -25,14 +27,18 @@ namespace YawgoogIdGenerator
         PrintDocument printDocument = new PrintDocument();
         PrintQueue printer;
         PrintTicket pTicket;
+        Settings settings =  new Settings();
         List<int> validIds = new List<int>();
         public MainWindow()
         {
+            settings.PhotoPath = settings.loadValue("");
+            Directory.SetCurrentDirectory(settings.PhotoPath);
             InitializeComponent();
             fileman = new Fileman();
             dataman = new Dataman();
             dtg_staffData.AutoGenerateColumns = false;
             LoadLogoIntoWpf();
+
 
 
         }
@@ -138,7 +144,7 @@ namespace YawgoogIdGenerator
                 {
 
 
-                    row.Photo = fileDialog.FileName;
+                    row.Photo = fileDialog.SafeFileName;
                     int ratios = fileman.CheckPhoto(row.Photo);
                     if (ratios == 4)
                     {
@@ -481,6 +487,26 @@ namespace YawgoogIdGenerator
                     dtg_staffData.Items.Refresh();
                 }
             }
+        }
+
+        private void btn_SetPhotoDirectory_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFolderDialog photoDirectory = new OpenFolderDialog { };
+            if(photoDirectory.ShowDialog() == true)
+            {
+                settings.PhotoPath = photoDirectory.FolderName;
+                Directory.SetCurrentDirectory(settings.PhotoPath);
+                if(MessageBox.Show("Save as Default","Confirmation",MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                {
+                    settings.saveValue(settings.PhotoPath);
+                }
+                update_CropStatus();
+
+            }
+
+
+
+
         }
     }
 }

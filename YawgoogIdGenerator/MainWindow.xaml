@@ -76,12 +76,15 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
+                                <ColumnDefinition/>
+
 
                             </Grid.ColumnDefinitions>
                             <Button Grid.Column="0" x:Name="btn_add" Content="Add" Click="btn_add_Click" IsEnabled="False"/>
                             <Button Grid.Column="1" x:Name="btn_saveas" Content="Save As" Click="btn_saveas_Click" IsEnabled="False"/>
                             <Button Grid.Column="2" x:Name="btn_save" Content="Save" Click="btn_save_Click" IsEnabled="False"/>
                             <Button Grid.Column="3" x:Name="btn_OpenPhoto" Content="Open Photo" Click="btn_OpenPhoto_Click" IsCancel="False"/>
+                            <Button Grid.Column="4" x:Name="btn_SetPhotoDirectory" Content="Set Photo Path" Click="btn_SetPhotoDirectory_Click" IsCancel="False"/>
 
                         </Grid>
                     </Grid>
@@ -116,7 +119,7 @@
             </TabItem>
         </TabControl>
         <Label Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="32" Height="53" Width="330" Margin="0,48,0,0">Yawgoog ID Generator</Label>
-        <Label Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" Margin="0,0,0,-41">Version 1.1.1</Label>
+        <Label Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" Margin="0,0,0,-41" Content="Version 1.1.2&#xD;&#xA;"/>
 
         <Image HorizontalAlignment="Center" x:Name="img_Logo"  VerticalAlignment="Center"/>
 
