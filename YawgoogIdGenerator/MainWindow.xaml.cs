@@ -26,6 +26,7 @@ namespace YawgoogIdGenerator
         IdGen genid = new IdGen();
         PrintDocument printDocument = new PrintDocument();
         PrintQueue printer;
+        bool fileOpened = false;
         PrintTicket pTicket;
         Settings settings =  new Settings();
         List<int> validIds = new List<int>();
@@ -90,8 +91,10 @@ namespace YawgoogIdGenerator
                 btn_save.IsEnabled = true;
                 btn_saveas.IsEnabled = true;
                 btn_exportIDs.IsEnabled = true;
+                btn_createBackup.IsEnabled = true;
                 update_CropStatus();
                 tbx_idIndex.Text = "0";
+                fileOpened = true;
 
 
             }
@@ -106,7 +109,7 @@ namespace YawgoogIdGenerator
             btn_opencsv.IsEnabled = false;
             btn_exportIDs.IsEnabled = false;
             dtg_staffData.IsEnabled = false;
-
+            btn_createBackup.IsEnabled = false;
             await Task.Run(() => {
                 foreach (var item in dataList)
                 {
@@ -127,6 +130,8 @@ namespace YawgoogIdGenerator
             btn_createNewCSV.IsEnabled = true;
             btn_opencsv.IsEnabled = true;
             btn_exportIDs.IsEnabled = true;
+            btn_createBackup.IsEnabled = true;
+
         }
 
         private void BrowseFile_Click(object sender, RoutedEventArgs e)
@@ -134,6 +139,8 @@ namespace YawgoogIdGenerator
 
 
             OpenFileDialog fileDialog = new OpenFileDialog();
+            fileDialog.Filter = "Image files (*.jpg,*.jpeg,*.JPG,*.png,*.gif)|*.jpeg;*.jpg;*.JPG;*.png;*.gif|All files (*.*)|*.*";
+
             var button = sender as Button;
             var row = button.DataContext as ParseInfo;
 
@@ -142,8 +149,6 @@ namespace YawgoogIdGenerator
 
                 if (row != null)
                 {
-
-
                     row.Photo = fileDialog.SafeFileName;
                     int ratios = fileman.CheckPhoto(row.Photo);
                     if (ratios == 4)
@@ -237,6 +242,7 @@ namespace YawgoogIdGenerator
                 btn_save.IsEnabled = true;
                 btn_saveas.IsEnabled = true;
                 btn_exportIDs.IsEnabled = true;
+                fileOpened = true;
             }
         }
 
@@ -423,8 +429,9 @@ namespace YawgoogIdGenerator
 
                     genid.clearCards();
                     validIds.Clear();
+                    tbx_idIndex.Text = "0";
                     var selected = dtg_staffData.SelectedItem as ParseInfo;
-                    Dataman tmpdata = new Dataman();
+                    Dataman tmpdata = new Dataman(); 
                     tmpdata.data = new List<ParseInfo> { selected };
 
                     if (selected.Done != true)
@@ -506,6 +513,25 @@ namespace YawgoogIdGenerator
 
 
 
+
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (fileOpened)
+            {
+                if (MessageBox.Show("Save Changes?", "Save Changes", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                {
+                    dataman.saveData(fileman.GetCsv());
+                }       
+            }
+
+        }
+
+        private void btn_createBackup_Click(object sender, RoutedEventArgs e)
+        {
+            fileman.CreateBackUp(fileman.GetCsv());
+            Thread.Sleep(1000);
 
         }
     }

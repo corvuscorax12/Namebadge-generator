@@ -108,15 +108,15 @@ namespace YawgoogIdGenerator
             {
                 case "t":
                 case "Yawgoog - Three Point":
-                    colors = Colors.Green.Darken3;
+                    colors = 0x009545;
                     break;
                 case "m":
                 case "Yawgoog - Medicine Bow":
-                    colors = Colors.Red.Darken3;
+                    colors = 0xd73c3b;
                     break;
                 case "s":
                 case "Yawgoog - Sandy Beach":
-                    colors = Colors.Blue.Darken3;
+                    colors = 0x008cbb;
                     break;
                 case "r":
                 case "Yawgoog - Reservation":
@@ -134,29 +134,6 @@ namespace YawgoogIdGenerator
             try
             {
                 float width, height;
-                switch (ratioMode)
-                {
-                    case 0:
-                        width = 27;
-                        height = 41;
-                        break;
-                    case 1:
-                        width = 31;
-                        height = 41;
-                        break;
-                    case 2:
-                        width = 33;
-                        height = 41;
-                        break;
-                    case 3:
-                        width = 41;
-                        height = 41;
-                        break;
-                    default:
-                        width = 41;
-                        height = 41;
-                        break;
-                }
                 var assembly = Assembly.GetExecutingAssembly();
                 byte[] imageData;
 
@@ -185,23 +162,14 @@ namespace YawgoogIdGenerator
                             page.DefaultTextStyle(x => x.FontSize(20));
                             page.Content().Column(x =>
                             {
-                                //x.Item()
-                                //.TranslateY(5, Unit.Millimetre)
-                                //.Text(currentYear)
-                                //.FontSize(15)
-                               // .AlignCenter();
-                                //x.Item()
-                                //.AlignCenter()
-                                //.TranslateY(1, Unit.Millimetre)
-                                //.Width(30, Unit.Millimetre)
-                                //.Image(imageData);
                                 x.Item()
                                 .AlignCenter()
                                 .TranslateY(6, Unit.Millimetre)
 
-                                .Width(width, Unit.Millimetre)
-                                .Height(height, Unit.Millimetre)
-                                .Image(Image.FromFile($"{idInformation.data[d].Photo}")).FitUnproportionally();
+                                .Width(46, Unit.Millimetre)
+                                .Height(41, Unit.Millimetre)
+                                .AlignCenter()
+                                .Image(Image.FromFile($"{idInformation.data[d].Photo}")).FitHeight();
                                x.Item().TranslateY(6f,Unit.Millimetre).Column(y =>
                                {
                                    y.Item()
@@ -252,35 +220,6 @@ namespace YawgoogIdGenerator
                                        });
                                    });
                                });
-                                //x.Item().Column(y =>
-                                //{
-                                //    y.Spacing(0);
-                                //    y.Item()
-                                //    .AlignCenter()
-                                //    .PaddingHorizontal(5)
-                                //    .Height(18)
-                                //    .MaxWidth(54, Unit.Millimetre)
-                                //    .ScaleToFit()
-                                //    .AlignMiddle()
-                                //    .AlignCenter()
-                                //    .Text($"{idInformation.data[d].Name} {pnouns}")
-                                //    .Bold()
-                                //    .AlignCenter()
-                                //    .FontSize(18);
-                                //    y.Spacing(5);
-                                //    y.Item().Background(Colors.Red.Darken3)
-                                //    .Padding(5)
-                                //    .Height(10,Unit.Millimetre)
-                                //    .AlignCenter()
-                                //    .ScaleToFit()
-                                //    .Width(46, Unit.Millimetre)
-                                //    .AlignMiddle()
-                                //    .Text($"{pos}").FontColor(Colors.White)
-                                //    .AlignCenter()
-                                //    .FontSize(10);
-                                //    y.Item()
-                                    
-                                //});
 
                             }
                             );

@@ -28,9 +28,15 @@ namespace YawgoogIdGenerator
 
             }
         }
+        public void CreateBackUp(string  csvPath)
+        {
+            var newcsvpath = csvPath + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss")+".txt";
+            File.Copy(csvPath, newcsvpath);
+        }
         public void SetCsv(string CSVPath)
         {
             csvPath = CSVPath;
+
         }
         public string GetCsv()
         {
@@ -46,25 +52,11 @@ namespace YawgoogIdGenerator
                 Image img = Image.FromFile(photo);
                 float desiredRatio = (float)(img.Width) / (float)(img.Height);
                 // 2:3 aspect ratio
-                if (desiredRatio >= 0.6 && desiredRatio < 0.70)
+                if (desiredRatio <= 1.12)
                 {
                     return 0;
                 }
-                // 3:4 aspect ratio 
-                else if (desiredRatio >= 0.70 && desiredRatio < 0.775)
-                {
-                    return 1;
-                }
-                // 4:5 aspect ratio
-                else if (desiredRatio >= 0.775 && desiredRatio <= 0.9 )
-                {
-                    return 2;
-                }
-                // 1:1
-                else if (desiredRatio >= 0.9 && desiredRatio <= 1.1)
-                {
-                    return 3;
-                }
+
                 else
                 {
                     return 4;
