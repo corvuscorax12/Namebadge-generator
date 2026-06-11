@@ -62,19 +62,21 @@ namespace YawgoogIdGenerator
             }
             return null;
         }
-        public int? genid(Dataman idInformation,int d,int ratioMode)
+        public int? genid(Dataman idInformation,int d,int ratioMode,int year)
         {
 
              QuestPDF.Settings.License = LicenseType.Community;
 
             string pnouns;
             string pos;
+
             var colors =  Colors.Black;
 
             if (File.Exists(idInformation.data[d].Photo)==false)
             {
                 return null;
             }
+
     
             if (idInformation.data[d].Pronouns == "")
             {
@@ -164,13 +166,13 @@ namespace YawgoogIdGenerator
                             {
                                 x.Item()
                                 .AlignCenter()
-                                .TranslateY(6, Unit.Millimetre)
+                                .TranslateY(8, Unit.Millimetre)
 
                                 .Width(46, Unit.Millimetre)
-                                .Height(41, Unit.Millimetre)
+                                .Height(41-2, Unit.Millimetre)
                                 .AlignCenter()
                                 .Image(Image.FromFile($"{idInformation.data[d].Photo}")).FitHeight();
-                               x.Item().TranslateY(6f,Unit.Millimetre).Column(y =>
+                               x.Item().TranslateY(8f,Unit.Millimetre).Column(y =>
                                {
                                    y.Item()
                                    .AlignCenter()
@@ -213,7 +215,7 @@ namespace YawgoogIdGenerator
                                                .TranslateX(-10)
                                                .AlignMiddle()
                                                .AlignRight()
-                                               .Text(DateTime.Now.Year.ToString())
+                                               .Text(year.ToString())
                                                .FontColor(Colors.White)
                                                .FontSize(15)
                                                .Bold();

@@ -13,6 +13,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using System.Text.RegularExpressions;
+using System.Xml.Linq;
+using System.Runtime.InteropServices;
 namespace YawgoogIdGenerator
 {
     /// <summary>
@@ -30,11 +33,74 @@ namespace YawgoogIdGenerator
         PrintTicket pTicket;
         Settings settings =  new Settings();
         List<int> validIds = new List<int>();
+
+        private void ApplySettingsIntoPage()
+        {
+            var _settings = settings.currentSettings[0];
+            if (_settings.PhotoPath == null)
+            {
+                tbx_PhotoPathDirectory.Text = "";
+            }
+            else
+            {
+            tbx_PhotoPathDirectory.Text = _settings.PhotoPath;
+            }
+            tbx_year.Text = _settings.Year.ToString();
+            if (_settings.SetToCurrentYear != 0)
+            {
+                chk_currentYear.IsChecked = true;
+
+            }
+            else
+            {
+                chk_currentYear.IsChecked = false;
+            }
+
+            switch (_settings.BackupMode)
+            {
+                case 0:
+                    rad_psession.IsChecked = true;
+                    rad_csession.IsChecked = false;
+                    break;
+                case 1:
+                    rad_psession.IsChecked = false;
+                    rad_csession.IsChecked = true;
+                    break;
+                default:
+                    rad_psession.IsChecked = true;
+                    rad_csession.IsChecked = false;
+                    break;
+            }
+            if (_settings.SaveAfterPrint != 0)
+            {
+                chk_saveAfterPrint.IsChecked = true;
+
+            }
+            else
+            {
+                chk_saveAfterPrint.IsChecked = false;
+            }
+
+        }
         public MainWindow()
         {
-            settings.PhotoPath = settings.loadValue("");
-            Directory.SetCurrentDirectory(settings.PhotoPath);
+            settings.loadValue();
+            if (settings.currentSettings[0].PhotoPath != "")
+            {
+                try
+                {
+                    Directory.SetCurrentDirectory(settings.currentSettings[0].PhotoPath);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Cannot Find the Path For the Photos please select it again");
+
+                }
+            }
+            //settings.PhotoPath = settings.loadValue("");
+            //Directory.SetCurrentDirectory(settings.PhotoPath);
             InitializeComponent();
+            ApplySettingsIntoPage();
             fileman = new Fileman();
             dataman = new Dataman();
             dtg_staffData.AutoGenerateColumns = false;
@@ -192,7 +258,16 @@ namespace YawgoogIdGenerator
             {
                 genid.clearCards();
                 validIds.Clear();
+                int year;
                 btn_exportIDs.IsEnabled = false;
+                if (chk_currentYear.IsChecked == true)
+                {
+                    year = DateTime.Now.Year;
+                }
+                else
+                {
+                    year = Convert.ToInt16(tbx_year.Text);
+                }
                 await Task.Run(() =>
                 {
                     for (int i = 0; i < dataman.data.Count; i++)
@@ -209,7 +284,7 @@ namespace YawgoogIdGenerator
                                 ratioMode = 5;
                             }
 
-                            if (genid.genid(dataman, i, ratioMode) != null)
+                            if (genid.genid(dataman, i, ratioMode,year) != null)
                             {
                                 validIds.Add(i);
                             }
@@ -343,6 +418,8 @@ namespace YawgoogIdGenerator
 
             }
         }
+        bool singleprint = false;
+
 
         private void btn_print_Click(object sender, RoutedEventArgs e)
         {
@@ -353,17 +430,24 @@ namespace YawgoogIdGenerator
             }
             else
             {
-
+                if (singleprint)
+                {
+                    
+                }
                 int rowIdx = int.Parse(tbx_idIndex.Text);
                 var img = genid.GetImage(rowIdx);
                 var datItem = dtg_staffData.Items[validIds[rowIdx]] as ParseInfo;
+                dataman.data[validIds[rowIdx]].Done = true;
+
                 datItem.Done = true;
                 Image imgtoprint = new Image();
                 imgtoprint.Source = img;
                 PrintDialog dialog = new PrintDialog { PrintQueue = printer, PrintTicket = pTicket };
                 dialog.PrintVisual(imgtoprint, $"PrintJob {DateTime.Now.ToString()}");
-                dtg_staffData.Items.Refresh();
-
+                if (chk_saveAfterPrint.IsChecked == true)
+                {
+                    dataman.saveData(fileman.GetCsv());
+                }
 
             }
 
@@ -430,10 +514,21 @@ namespace YawgoogIdGenerator
                     genid.clearCards();
                     validIds.Clear();
                     tbx_idIndex.Text = "0";
+
                     var selected = dtg_staffData.SelectedItem as ParseInfo;
+                    int row = dtg_staffData.SelectedIndex;
+
                     Dataman tmpdata = new Dataman(); 
                     tmpdata.data = new List<ParseInfo> { selected };
-
+                    int year;
+                    if (chk_currentYear.IsChecked == true)
+                    {
+                        year = DateTime.Now.Year;
+                    }
+                    else
+                    {
+                        year = Convert.ToInt16(tbx_year.Text);
+                    }
                     if (selected.Done != true)
                     {
                         int ratioMode;
@@ -446,9 +541,10 @@ namespace YawgoogIdGenerator
                             ratioMode = 5;
                         }
 
-                        if (genid.genid(tmpdata, 0, ratioMode) != null)
+                        if (genid.genid(tmpdata, 0, ratioMode,year) != null)
                         {
-                            validIds.Add(0);
+                            
+                            validIds.Add(row);
                         }
                     }
                     var img = genid.GetImage(0);
@@ -499,22 +595,53 @@ namespace YawgoogIdGenerator
         private void btn_SetPhotoDirectory_Click(object sender, RoutedEventArgs e)
         {
             OpenFolderDialog photoDirectory = new OpenFolderDialog { };
-            if(photoDirectory.ShowDialog() == true)
+            if (photoDirectory.ShowDialog() == true)
             {
-                settings.PhotoPath = photoDirectory.FolderName;
-                Directory.SetCurrentDirectory(settings.PhotoPath);
-                if(MessageBox.Show("Save as Default","Confirmation",MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                Directory.SetCurrentDirectory(photoDirectory.FolderName);
+                if (MessageBox.Show("Save as Default", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
-                    settings.saveValue(settings.PhotoPath);
+                    tbx_PhotoPathDirectory.Text = photoDirectory.FolderName;
+                    SaveSettings();
                 }
                 update_CropStatus();
 
             }
+        }
 
+        private void SaveSettings()
+        {
+            CurrentSettings _settings = new CurrentSettings();
+            _settings.PhotoPath = tbx_PhotoPathDirectory.Text;
+            _settings.Year = Convert.ToInt16(tbx_year.Text);
+            if (chk_currentYear.IsChecked == true)
+            {
+                _settings.SetToCurrentYear = 1;
+            }
+            else
+            {
+                _settings.SetToCurrentYear = 0;
+            }
 
-
+            if (rad_psession.IsChecked == true)
+            {
+                _settings.BackupMode = 0;
+            }
+            else if (rad_csession.IsChecked == true)
+            {
+                _settings.BackupMode = 1;
+            }
+            if (chk_saveAfterPrint.IsChecked == true)
+            {
+                _settings.SaveAfterPrint = 1;
+            }
+            else
+            {
+                _settings.SaveAfterPrint = 0;
+            }
+            settings.saveJson( _settings );
 
         }
+
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -530,9 +657,50 @@ namespace YawgoogIdGenerator
 
         private void btn_createBackup_Click(object sender, RoutedEventArgs e)
         {
-            fileman.CreateBackUp(fileman.GetCsv());
-            Thread.Sleep(1000);
+            if (rad_psession.IsChecked == true)
+            { 
+                fileman.CreateBackUp(fileman.GetCsv());
+                Thread.Sleep(1000);
+            }
+            if (rad_csession.IsChecked == true)
+            {
+                dataman.saveData(fileman.GetCsv());
+                fileman.CreateBackUp(fileman.GetCsv());
+                Thread.Sleep(1000);
 
+            }
+
+        }
+
+        private void tbx_year_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+
+        }
+
+        private void btn_PhotoPathSetting_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFolderDialog photoDirectory = new OpenFolderDialog { };
+            if (photoDirectory.ShowDialog() == true)
+            {
+                Directory.SetCurrentDirectory(photoDirectory.FolderName);
+                tbx_PhotoPathDirectory.Text = photoDirectory.FolderName;
+                update_CropStatus();
+
+            }
+        }
+
+        private void chk_currentYear_Checked(object sender, RoutedEventArgs e)
+        {
+            tbx_year.Text = DateTime.Now.Year.ToString();
+        }
+
+        private void btn_SaveSettings_Click(object sender, RoutedEventArgs e)
+        {
+            SaveSettings();
+            //Make it look like its doing somthing :P (it is but doesnt feel like it)
+            Thread.Sleep(500);
         }
     }
 }
