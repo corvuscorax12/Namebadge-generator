@@ -33,6 +33,8 @@ namespace YawgoogIdGenerator
         PrintTicket pTicket;
         Settings settings =  new Settings();
         List<int> validIds = new List<int>();
+        Printing printing = new Printing();
+
 
         private void ApplySettingsIntoPage()
         {
@@ -80,6 +82,10 @@ namespace YawgoogIdGenerator
             {
                 chk_saveAfterPrint.IsChecked = false;
             }
+            tbx_defaultStaffList.Text = _settings.DefaultStaffList;
+
+            printing.printerName = _settings.PrinterName;
+            printing.printsettingsxml = _settings.PrinterSettings;
 
         }
         public MainWindow()
@@ -105,6 +111,23 @@ namespace YawgoogIdGenerator
             dataman = new Dataman();
             dtg_staffData.AutoGenerateColumns = false;
             LoadLogoIntoWpf();
+            if (tbx_defaultStaffList.Text == "")
+            {
+        
+            }
+            else if (File.Exists(tbx_defaultStaffList.Text) == true)
+            {
+                loadfiles(tbx_defaultStaffList.Text);
+            }
+            else
+            {
+                MessageBox.Show("Cannot Find The Default File Try Setting it again");
+            }
+            if (printing.printerName != "" && printing.printsettingsxml != "")
+            {    
+             printing.loadSettings();
+            }
+
 
 
 
@@ -133,21 +156,9 @@ namespace YawgoogIdGenerator
                 }
             }
         }
-
-        private List<ParseInfo> CloneData(List<ParseInfo> source)
+        private void loadfiles(string fName)
         {
-            return source.Select(x => new ParseInfo(x)).ToList();
-        }
-        private void btn_opencsv_Click(object sender, RoutedEventArgs e)
-        {
-            genid.clearCards();
-            validIds.Clear();
-            OpenFileDialog fileDialog = new OpenFileDialog();
-            fileDialog.Filter = "text files (*.txt)|*.txt";
-            if (fileDialog.ShowDialog() == true)
-            {
-
-                fileman.SetCsv(fileDialog.FileName);
+                fileman.SetCsv(fName);
                 dataman.populateData(fileman.GetCsv());
                 undoredo.Clear();
                 dtg_staffData.ItemsSource = null;
@@ -162,8 +173,22 @@ namespace YawgoogIdGenerator
                 tbx_idIndex.Text = "0";
                 fileOpened = true;
 
-
+         } 
+        private List<ParseInfo> CloneData(List<ParseInfo> source)
+        {
+            return source.Select(x => new ParseInfo(x)).ToList();
+        }
+        private void btn_opencsv_Click(object sender, RoutedEventArgs e)
+        {
+            genid.clearCards();
+            validIds.Clear();
+            OpenFileDialog fileDialog = new OpenFileDialog();
+            fileDialog.Filter = "text files (*.txt)|*.txt";
+            if (fileDialog.ShowDialog()==true)
+            {
+                loadfiles(fileDialog.FileName);
             }
+
 
         }
         private async void update_CropStatus()
@@ -423,27 +448,20 @@ namespace YawgoogIdGenerator
 
         private void btn_print_Click(object sender, RoutedEventArgs e)
         {
-            if (printer == null || pTicket == null)
+            if (printing.printer == null || printing.pTicket == null)
             {
                 MessageBox.Show("Invalid Print Settings Have Please click the settings button before printing");
 
             }
             else
             {
-                if (singleprint)
-                {
-                    
-                }
                 int rowIdx = int.Parse(tbx_idIndex.Text);
                 var img = genid.GetImage(rowIdx);
                 var datItem = dtg_staffData.Items[validIds[rowIdx]] as ParseInfo;
                 dataman.data[validIds[rowIdx]].Done = true;
 
                 datItem.Done = true;
-                Image imgtoprint = new Image();
-                imgtoprint.Source = img;
-                PrintDialog dialog = new PrintDialog { PrintQueue = printer, PrintTicket = pTicket };
-                dialog.PrintVisual(imgtoprint, $"PrintJob {DateTime.Now.ToString()}");
+                printing.print(img);
                 if (chk_saveAfterPrint.IsChecked == true)
                 {
                     dataman.saveData(fileman.GetCsv());
@@ -459,18 +477,11 @@ namespace YawgoogIdGenerator
         private void btn_printsettings_Click(object sender, RoutedEventArgs e)
         {
             PrintDialog printDialog = new PrintDialog();
-            if (printDialog.ShowDialog() == true)
-            {
-                printer = printDialog.PrintQueue;
-                pTicket = printDialog.PrintTicket;
-            }
+            printing.settings(SaveSettings(true),settings);
 
         }
 
-        private void btn_quickID_Click(object sender, RoutedEventArgs e)
-        {
 
-        }
         private void btn_OpenPhoto_Click(object sender, RoutedEventArgs e)
         {
             var selected = dtg_staffData.SelectedItem as ParseInfo;
@@ -608,7 +619,7 @@ namespace YawgoogIdGenerator
             }
         }
 
-        private void SaveSettings()
+        private CurrentSettings SaveSettings(bool nosave = false)
         {
             CurrentSettings _settings = new CurrentSettings();
             _settings.PhotoPath = tbx_PhotoPathDirectory.Text;
@@ -638,7 +649,15 @@ namespace YawgoogIdGenerator
             {
                 _settings.SaveAfterPrint = 0;
             }
-            settings.saveJson( _settings );
+            _settings.DefaultStaffList = tbx_defaultStaffList.Text;
+            if (!nosave)
+            {
+                settings.saveJson( _settings );
+                return _settings;
+            }
+            _settings.PrinterName = printing.printerName;
+            _settings.PrinterSettings = printing.printsettingsxml;
+            return _settings;
 
         }
 
@@ -700,7 +719,30 @@ namespace YawgoogIdGenerator
         {
             SaveSettings();
             //Make it look like its doing somthing :P (it is but doesnt feel like it)
+            Mouse.OverrideCursor = Cursors.Wait;
             Thread.Sleep(500);
+            Mouse.OverrideCursor = null;
+
+        }
+
+        private void btn_StaffListSetting_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog fileDialog = new OpenFileDialog();
+            fileDialog.Filter = "text files (*.txt)|*.txt";
+            if (fileDialog.ShowDialog() == true)
+            {
+                tbx_defaultStaffList.Text = fileDialog.FileName;
+            }
+        }
+
+        private void btn_ClearStaffListSetting_Click(object sender, RoutedEventArgs e)
+        {
+            tbx_defaultStaffList.Text = "";
+        }
+
+        private void btn_ClearPhotoPathSetting_Click(object sender, RoutedEventArgs e)
+        {
+            tbx_PhotoPathDirectory.Text = "";
         }
     }
 }

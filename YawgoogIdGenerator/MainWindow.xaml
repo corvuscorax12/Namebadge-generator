@@ -129,12 +129,13 @@
                         <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition/>
+                        <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <StackPanel>
-                    <Label Grid.Row="0">Settings</Label>
+                    <Label Grid.Row="0" FontWeight="Bold">Settings</Label>
                     <Line StrokeThickness="1" Fill="Black" Stroke="Black" X1="274" Margin="0,1,0,0"/>
                     </StackPanel>
                     
@@ -143,9 +144,19 @@
                         <StackPanel Grid.Row="1" Orientation="Horizontal">
                             <TextBox x:Name="tbx_PhotoPathDirectory"  MinWidth="152" MaxWidth="152" IsReadOnly="True"/>
                             <Button x:Name="btn_PhotoPathSetting" MinWidth="34" Click="btn_PhotoPathSetting_Click">...</Button>
+                            <Button x:Name="btn_ClearPhotoPathSetting" MinWidth="34" Click="btn_ClearPhotoPathSetting_Click">X</Button>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Grid.Row="2">
+                        <Line StrokeThickness="1" Fill="Black" Stroke="Black" X1="274" Margin="0,10,0,0"/>
+                        <Label>Default Staff List</Label>
+                        <StackPanel Grid.Row="1" Orientation="Horizontal">
+                            <TextBox x:Name="tbx_defaultStaffList"  MinWidth="152" MaxWidth="152" IsReadOnly="True"/>
+                            <Button x:Name="btn_StaffListSetting" MinWidth="34" Click="btn_StaffListSetting_Click">...</Button>
+                            <Button x:Name="btn_ClearStaffListSetting" MinWidth="34" Click="btn_ClearStaffListSetting_Click">X</Button>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Grid.Row="3">
                         <Line StrokeThickness="1" Fill="Black" Stroke="Black" X1="274" Margin="0,10,0,0"/>
 
                         <Label>Year:</Label>
@@ -154,7 +165,7 @@
                             <CheckBox x:Name="chk_currentYear" Checked="chk_currentYear_Checked">Use Current Year</CheckBox>
                         </StackPanel>
                     </StackPanel>
-                    <StackPanel Grid.Row="3">
+                    <StackPanel Grid.Row="4">
                         <Line StrokeThickness="1" Fill="Black" Stroke="Black" X1="274" Margin="0,10,0,0"/>
                         <Label>Backup Mode:</Label>
                         <StackPanel Margin="27,0,0,0">
@@ -162,11 +173,11 @@
                             <RadioButton x:Name="rad_csession" GroupName="rdo_backup">Save Then Backup</RadioButton>
                         </StackPanel>
                     </StackPanel>
-                    <StackPanel Grid.Row="4">
+                    <StackPanel Grid.Row="5">
                         <Line StrokeThickness="1" Fill="Black" Stroke="Black" X1="274" Margin="0,12,0,0" VerticalAlignment="Bottom"/>
                         <CheckBox x:Name="chk_saveAfterPrint" Margin="0,9,0,0" >Save after Print</CheckBox>
                     </StackPanel>
-                    <StackPanel Grid.Row="5">
+                    <StackPanel Grid.Row="6">
                     <Line StrokeThickness="1" Fill="Black" Stroke="Black" X1="274" Margin="0,12,0,0" VerticalAlignment="Bottom"/>
                     <StackPanel Orientation="Horizontal" Grid.Row="5" Margin="0,11,0,0">
                         <Button x:Name="btn_SaveSettings" Click="btn_SaveSettings_Click">Save Settings </Button>
