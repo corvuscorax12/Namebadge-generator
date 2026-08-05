@@ -130,6 +130,7 @@
                         <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition/>
+                        <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
@@ -178,6 +179,10 @@
                         <CheckBox x:Name="chk_saveAfterPrint" Margin="0,9,0,0" >Save after Print</CheckBox>
                     </StackPanel>
                     <StackPanel Grid.Row="6">
+                        <Line StrokeThickness="1" Fill="Black" Stroke="Black" X1="274" Margin="0,12,0,0" VerticalAlignment="Bottom"/>
+                        <CheckBox x:Name="chk_ignoreDone" Margin="0,9,0,0" Checked="chk_ignoreDone_Checked">Ignore Done Marker for "Create from Selected"</CheckBox>
+                    </StackPanel>
+                    <StackPanel Grid.Row="7">
                     <Line StrokeThickness="1" Fill="Black" Stroke="Black" X1="274" Margin="0,12,0,0" VerticalAlignment="Bottom"/>
                     <StackPanel Orientation="Horizontal" Grid.Row="5" Margin="0,11,0,0">
                         <Button x:Name="btn_SaveSettings" Click="btn_SaveSettings_Click">Save Settings </Button>
@@ -189,7 +194,7 @@
             </TabItem>
         </TabControl>
         <Label Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="32" Height="53" Width="330" Margin="0,48,0,0">Yawgoog ID Generator</Label>
-        <Label Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" Margin="0,0,0,-41" Content="Version 1.1.6"/>
+        <Label Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" Margin="0,0,0,-41" Content="Version 1.1.10"/>
 
         <Image HorizontalAlignment="Center" x:Name="img_Logo"  VerticalAlignment="Center"/>
 

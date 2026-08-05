@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Win32;
-using System.Configuration.Internal;
+﻿using Microsoft.Win32;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing.Printing;
@@ -8,14 +6,13 @@ using System.IO;
 using System.Net;
 using System.Printing;
 using System.Reflection;
-using System.Security.AccessControl;
+
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
-using System.Runtime.InteropServices;
+
 namespace YawgoogIdGenerator
 {
     /// <summary>
@@ -86,6 +83,10 @@ namespace YawgoogIdGenerator
 
             printing.printerName = _settings.PrinterName;
             printing.printsettingsxml = _settings.PrinterSettings;
+            if (_settings.IgnoreDone == 1)
+            {
+                chk_ignoreDone.IsChecked = true;
+            }
 
         }
         public MainWindow()
@@ -300,7 +301,7 @@ namespace YawgoogIdGenerator
                         if (dataman.data[i].Done != true)
                         {
                             int ratioMode;
-                            if (dataman.data[i].Photo != null && dataman.data[i].Photo != "")
+                            if (dataman.data[i].Photo != null && dataman.data[i].Photo != "" )
                             {
                                 ratioMode = fileman.CheckPhoto(dataman.data[i].Photo);
                             }
@@ -453,8 +454,8 @@ namespace YawgoogIdGenerator
                 MessageBox.Show("Invalid Print Settings Have Please click the settings button before printing");
 
             }
-            else
-            {
+            else if (genid.getCount > 0)
+            {               
                 int rowIdx = int.Parse(tbx_idIndex.Text);
                 var img = genid.GetImage(rowIdx);
                 var datItem = dtg_staffData.Items[validIds[rowIdx]] as ParseInfo;
@@ -467,6 +468,14 @@ namespace YawgoogIdGenerator
                     dataman.saveData(fileman.GetCsv());
                 }
 
+            rowIdx++;
+                if (rowIdx < genid.getCount)
+                {
+                    var nxtimg = genid.GetImage(rowIdx);
+                    img_Id.Source = nxtimg;
+                    tbx_idIndex.Text = rowIdx.ToString();
+
+                }
             }
 
 
@@ -540,7 +549,7 @@ namespace YawgoogIdGenerator
                     {
                         year = Convert.ToInt16(tbx_year.Text);
                     }
-                    if (selected.Done != true)
+                    if (selected.Done != true || chk_ignoreDone.IsChecked == true)
                     {
                         int ratioMode;
                         if (selected.Photo != null && selected.Photo != "")
@@ -650,6 +659,14 @@ namespace YawgoogIdGenerator
                 _settings.SaveAfterPrint = 0;
             }
             _settings.DefaultStaffList = tbx_defaultStaffList.Text;
+            if (chk_ignoreDone.IsChecked == true)
+            {
+                _settings.IgnoreDone = 0;
+            }
+            else
+            {
+                _settings.IgnoreDone = 1;
+            }
             if (!nosave)
             {
                 settings.saveJson( _settings );
@@ -743,6 +760,11 @@ namespace YawgoogIdGenerator
         private void btn_ClearPhotoPathSetting_Click(object sender, RoutedEventArgs e)
         {
             tbx_PhotoPathDirectory.Text = "";
+        }
+
+        private void chk_ignoreDone_Checked(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

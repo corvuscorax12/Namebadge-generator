@@ -76,7 +76,10 @@ namespace YawgoogIdGenerator
             {
                 return null;
             }
-
+            if (ratioMode == 5 || ratioMode == 4)
+            {
+                return null;
+            }
     
             if (idInformation.data[d].Pronouns == "")
             {

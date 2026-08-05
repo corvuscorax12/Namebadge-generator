@@ -21,6 +21,8 @@ namespace YawgoogIdGenerator
 
         public string PrinterName { get; set; }
 
+        public int IgnoreDone { get; set; }
+
         public string PrinterSettings { get; set; }
 
         public CurrentSettings()
@@ -30,6 +32,7 @@ namespace YawgoogIdGenerator
             Year = 1970;
             SetToCurrentYear = 1;
             SaveAfterPrint = 1;
+            IgnoreDone = 1;
             DefaultStaffList = "";
             PrinterName = "";
             PrinterSettings = "";
